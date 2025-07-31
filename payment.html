@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام عملية الدفع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background-color: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.2);
+            border: 1px solid #00FF7F;
+        }
+        
+        h1 {
+            color: #00FF7F;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00FF7F;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .wallet-info {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px dashed #00FF7F;
+        }
+        
+        .wallet-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00FF7F;
+            margin: 10px 0;
+        }
+        
+        .copy-btn {
+            background-color: #00FF7F;
+            color: #121212;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .upload-btn {
+            background-color: #00FF7F;
+            color: #121212;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .upload-btn i {
+            margin-left: 8px;
+        }
+        
+        .confirm-btn {
+            background-color: transparent;
+            color: #00FF7F;
+            border: 2px solid #00FF7F;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            display: none;
+        }
+        
+        .loading-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #00FF7F;
+        }
+        
+        .loading-subtext {
+            color: #aaa;
+            text-align: center;
+            max-width: 80%;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 8px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #00FF7F;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* New styles for image preview */
+        .image-preview-container {
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .image-preview {
+            display: flex;
+            align-items: center;
+            background-color: #222;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .preview-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .preview-info {
+            flex: 1;
+            padding: 0 15px;
+        }
+        
+        .preview-filename {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .preview-status {
+            color: #00FF7F;
+            font-size: 14px;
+        }
+        
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>إتمام عملية الدفع</h1>
+        
+        <div id="paymentForm">
+            <div class="input-group">
+                <label for="amount">المبلغ المطلوب</label>
+                <input type="number" id="amount" placeholder="ادخل المبلغ بالجنيه المصري">
+            </div>
+            
+            <div class="input-group">
+                <label for="orderNumber">رقم الطلب</label>
+                <input type="text" id="orderNumber" placeholder="ادخل رقم الطلب">
+            </div>
+            
+            <div class="wallet-info">
+                <p>برجاء التحويل على <strong>محفظة من انستا باي</strong> بالمبلغ المحدد</p>
+                <div class="wallet-number">01129898866</div>
+                <button class="copy-btn" onclick="copyWalletNumber()">نسخ رقم المحفظة</button>
+            </div>
+            
+            <input type="file" id="paymentProof" accept="image/*" class="hidden" onchange="showImagePreview(this)">
+            <button class="upload-btn" onclick="document.getElementById('paymentProof').click()">
+                <i>📁</i> رفع إثبات الدفع
+            </button>
+            
+            <div class="image-preview-container" id="imagePreviewContainer">
+                <div class="image-preview">
+                    <img id="previewImage" class="preview-image" src="#" alt="معاينة الصورة">
+                    <div class="preview-info">
+                        <div class="preview-filename" id="previewFilename"></div>
+                        <div class="preview-status">تم اختيار الملف</div>
+                    </div>
+                    <button class="delete-btn" onclick="removeImage()">حذف</button>
+                </div>
+            </div>
+            
+            <button class="confirm-btn" onclick="submitPayment()">تم التحويل</button>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">بانتظار التأكيد البشري</div>
+        <div class="loading-subtext">
+            قد يستغرق الأمر أكثر من ساعتين.<br>
+            عندما يتم التأكيد، سيتم إرسال اللعبة على الإيميل الخاص بكم.
+        </div>
+        <a style="color: aqua; text-decoration: none;"  href="https://mgd2games.shop/account">الرجوع الي التاجر</a>
+    </div>
+    
+    <script>
+        function copyWalletNumber() {
+            navigator.clipboard.writeText("01129898866");
+            alert("تم نسخ رقم المحفظة: 01129898866");
+        }
+        
+        function showImagePreview(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.getElementById('previewImage').src = e.target.result;
+                    document.getElementById('previewFilename').textContent = input.files[0].name;
+                    document.getElementById('imagePreviewContainer').style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function removeImage() {
+            document.getElementById('paymentProof').value = '';
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+            document.getElementById('previewImage').src = '#';
+            document.getElementById('previewFilename').textContent = '';
+        }
+        
+        function submitPayment() {
+            const amount = document.getElementById('amount').value;
+            const orderNumber = document.getElementById('orderNumber').value;
+            const paymentProof = document.getElementById('paymentProof').files[0];
+            
+            if (!amount || !orderNumber || !paymentProof) {
+                alert("برجاء إدخال جميع البيانات المطلوبة");
+                return;
+            }
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            // Here you would normally send the data to your server
+            // For demonstration, we'll just log it
+            console.log({
+                amount: amount,
+                orderNumber: orderNumber,
+                paymentProof: paymentProof.name,
+                email: "hhjjkmalek@gmail.com"
+            });
+            
+            // In a real implementation, you would send this data to your backend
+            // which would then send the email to hhjjkmalek@gmail.com
+        }
+    </script>
+</body>
+</html>
